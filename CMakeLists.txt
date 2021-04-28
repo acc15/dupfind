@@ -26,7 +26,7 @@ set(TEST_SRC
     test/DamerauLevenshtein.cpp
     test/Options.cpp
     test/main.cpp
-    test/SimComp.cpp
+    test/DupFind.cpp
 )
 
 add_executable(dupfind_tests ${TEST_SRC})
