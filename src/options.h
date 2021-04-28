@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "pattern_set.h"
+#include "option_parser.h"
 
 enum option_flags {
 
@@ -34,7 +35,7 @@ public:
     [[nodiscard]] bool dir_match(const std::filesystem::path& p) const;
     [[nodiscard]] bool file_match(const std::filesystem::path& p) const;
 
-    bool parse(int argc, const char* const argv[]);
+    int parse(int argc, const char* const argv[]);
 
 };
 

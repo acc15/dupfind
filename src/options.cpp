@@ -1,4 +1,4 @@
-#include <cstring>
+#include <iostream>
 
 #include "options.h"
 #include "option_parser.h"
@@ -30,13 +30,17 @@ bool options::file_match(const std::filesystem::path& p) const {
     return cmp_files() && patterns.match(p) && file_patterns.match(p);
 }
 
-bool options::parse(int argc, const char* const* argv) {
+int options::parse(int argc, const char* const* argv) {
+
     option_parser p;
+
+    bool usage = false;
 
     p.flag("nf", "Exclude all files from comparison", [this]() { flags.set(NO_FILE); });
     p.flag("nd", "Exclude all directories from comparison", [this]() { flags.set(NO_DIR); });
     p.flag("nm", "Disable mixed comparisons (file vs dir)", [this]() { flags.set(NO_MIX); });
     p.flag("ns", "Disable file/dir comparisons in same directory", [this]() { flags.set(NO_SAME_DIR); });
+    p.flag("h", "Prints this help", [&usage]() { usage = true; });
 
     p.opt("f", "Minimum factor", [this](const std::string& val) { return try_parse_float(val, factor); });
 
@@ -50,6 +54,12 @@ bool options::parse(int argc, const char* const* argv) {
     p.opt("id", "Dir inclusion regex", [this](const std::string& val) { return dir_patterns.include(val); });
     p.opt("ed", "Dir exclusion regex", [this](const std::string& val) { return dir_patterns.exclude(val); });
 
-    return p.parse(argc, argv);
+    bool success = p.parse(argc, argv);
+    if (usage) {
+        p.print_opts(std::cout);
+        return -1;
+    }
+    return success ? 0 : 1;
+
 }
 
