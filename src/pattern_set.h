@@ -2,7 +2,7 @@
 
 #include <regex>
 
-class PatternSet {
+class pattern_set {
 private:
     typedef std::pair<std::regex, std::string> PatternPair;
 
@@ -19,9 +19,9 @@ public:
 
     [[nodiscard]] bool match(const std::string& str) const;
 
-    friend std::ostream& operator<<(std::ostream& o, const PatternSet& p);
+    friend std::ostream& operator<<(std::ostream& o, const pattern_set& p);
 
 };
 
-std::ostream& operator<<(std::ostream& o, const PatternSet& p);
+std::ostream& operator<<(std::ostream& o, const pattern_set& p);
 

@@ -1,24 +1,24 @@
 #pragma once
 
-#include "DistanceMatrix.h"
+#include "distance_matrix.h"
 
-struct DamerauLevenshteinCost {
+struct damerau_levenshtein_cost {
     size_t replace;
     size_t insert;
     size_t remove;
     size_t transpose;
 };
 
-const DamerauLevenshteinCost DEFAULT_COSTS = { 1, 1, 1, 1 };
+const damerau_levenshtein_cost DEFAULT_COSTS = {1, 1, 1, 1 };
 
 
 template <typename Seq>
-size_t max_damerau_levenshtein_distance(const Seq& s1, const Seq& s2, const DamerauLevenshteinCost& cost = DEFAULT_COSTS) {
+size_t max_damerau_levenshtein_distance(const Seq& s1, const Seq& s2, const damerau_levenshtein_cost& cost = DEFAULT_COSTS) {
     return s1.size() * cost.remove + s2.size() * cost.insert;
 }
 
 template <typename Seq>
-size_t damerau_levenshtein_distance(const Seq& s1, const Seq& s2, DistanceMatrix& m, const DamerauLevenshteinCost& cost = DEFAULT_COSTS) {
+size_t damerau_levenshtein_distance(const Seq& s1, const Seq& s2, distance_matrix& m, const damerau_levenshtein_cost& cost = DEFAULT_COSTS) {
 
     typedef typename Seq::value_type value_type;
 
@@ -51,7 +51,7 @@ size_t damerau_levenshtein_distance(const Seq& s1, const Seq& s2, DistanceMatrix
 }
 
 template <typename T, typename Seq>
-T damerau_levenshtein_factor(const Seq& s1, const Seq& s2, DistanceMatrix& m, const DamerauLevenshteinCost& cost = DEFAULT_COSTS) {
+T damerau_levenshtein_factor(const Seq& s1, const Seq& s2, distance_matrix& m, const damerau_levenshtein_cost& cost = DEFAULT_COSTS) {
     size_t max_distance = max_damerau_levenshtein_distance(s1, s2, cost);
     size_t distance = damerau_levenshtein_distance(s1, s2, m, cost);
     return static_cast<T>(1.) - (static_cast<T>(distance) / max_distance);

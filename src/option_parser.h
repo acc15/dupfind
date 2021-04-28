@@ -6,9 +6,9 @@
 
 bool try_parse_float(const std::string& str, float& result);
 
-class OptionsParser {
+class option_parser {
 public:
-    struct Desc {
+    struct desc {
         std::string description;
         std::function<bool (const std::string&)> parse;
         bool require_arg;
@@ -16,12 +16,12 @@ public:
 
 private:
 
-    typedef std::unordered_map<std::string, Desc> OptionMap;
-    OptionMap _opts;
+    std::unordered_map<std::string, desc> _opts;
+    std::unordered_map<std::string, desc*> _syn;
 
 public:
 
-    Desc* find_desc(const std::string& opt);
+    desc* find_desc(const std::string& opt);
 
     void flag(const std::string& name, const std::string& description, const std::function<void ()>& parse);
     void opt(const std::string& name, const std::string& description, const std::function<bool (const std::string&)>& parse);

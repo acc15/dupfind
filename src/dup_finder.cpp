@@ -1,13 +1,12 @@
 #include <iostream>
 #include <vector>
 
-#include "DupFind.h"
-#include "DamerauLevenshtein.h"
+#include "dup_finder.h"
 
 namespace fs = std::filesystem;
 
-void DupFind::compare(const fs::path& e1, const fs::path& e2) {
-    auto factor = damerau_levenshtein_factor<float>(e1.filename().string(), e2.filename().string(), _dm);
+void dup_finder::compare(const fs::path& e1, const fs::path& e2) {
+    auto factor = _pc.compare(e1, e2);
     if (factor >= _opts.factor) {
         std::cout << "[" << std::setfill('0') << std::setw(10) << _comparison_count << "][";
         if (factor >= 1.f) {
@@ -20,7 +19,7 @@ void DupFind::compare(const fs::path& e1, const fs::path& e2) {
     ++_comparison_count;
 }
 
-void DupFind::scan_dir(const fs::path& path) {
+void dup_finder::scan_dir(const fs::path& path) {
 
     size_t file_count = 0;
     size_t dir_count = 0;
@@ -45,7 +44,7 @@ void DupFind::scan_dir(const fs::path& path) {
 
 }
 
-bool DupFind::scan() {
+bool dup_finder::scan() {
 
     std::cout << "Scanning directory: " << _opts.dir << std::endl;
     std::cout << "Files: " << (_opts.cmp_files() ? "on" : "off") << std::endl;
@@ -90,7 +89,7 @@ bool DupFind::scan() {
 }
 
 
-void DupFind::compare_dir() {
+void dup_finder::compare_dir() {
 
     for (size_t i = 0; i < _fp.size(); ++i) {
         const auto& f1 = _fp[i];
@@ -126,7 +125,7 @@ void DupFind::compare_dir() {
     }
 }
 
-DupFind::DupFind(const Options& opts) : _opts(opts)
+dup_finder::dup_finder(const options& opts) : _opts(opts)
     , _excluded_dir_comparisons(0)
     , _excluded_mixed_comparisons(0)
     , _excluded_file_comparisons(0)
@@ -134,7 +133,7 @@ DupFind::DupFind(const Options& opts) : _opts(opts)
 {
 }
 
-size_t DupFind::compute_comparison_count(size_t n) {
+size_t dup_finder::compute_comparison_count(size_t n) {
     return (n * n - n) / 2;
 }
 

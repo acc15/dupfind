@@ -1,37 +1,37 @@
 #include <cstring>
 
-#include "Options.h"
-#include "OptionsParser.h"
+#include "options.h"
+#include "option_parser.h"
 
-Options::Options() : dir(std::filesystem::current_path()), factor(0.9f) {
+options::options() : dir(std::filesystem::current_path()), factor(0.9f) {
 }
 
-bool Options::cmp_files() const {
+bool options::cmp_files() const {
     return !flags.test(NO_FILE);
 }
 
-bool Options::cmp_dirs() const {
+bool options::cmp_dirs() const {
     return !flags.test(NO_DIR);
 }
 
-bool Options::cmp_mixed() const {
+bool options::cmp_mixed() const {
     return !flags.test(NO_MIX);
 }
 
-bool Options::skip_same_dir() const {
+bool options::skip_same_dir() const {
     return flags.test(NO_SAME_DIR);
 }
 
-bool Options::dir_match(const std::filesystem::path& p) const {
+bool options::dir_match(const std::filesystem::path& p) const {
     return cmp_dirs() && patterns.match(p) && dir_patterns.match(p);
 }
 
-bool Options::file_match(const std::filesystem::path& p) const {
+bool options::file_match(const std::filesystem::path& p) const {
     return cmp_files() && patterns.match(p) && file_patterns.match(p);
 }
 
-bool Options::parse(int argc, const char* const* argv) {
-    OptionsParser p;
+bool options::parse(int argc, const char* const* argv) {
+    option_parser p;
 
     p.flag("nf", "Exclude all files from comparison", [this]() { flags.set(NO_FILE); });
     p.flag("nd", "Exclude all directories from comparison", [this]() { flags.set(NO_DIR); });

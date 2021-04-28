@@ -1,12 +1,11 @@
-#include "Options.h"
-#include "DupFind.h"
+#include "options.h"
+#include "dup_finder.h"
 
 int main(int argc, char *argv[]) {
-
-    Options opts;
+    options opts;
     opts.parse(argc, argv);
 
-    DupFind comp(opts);
+    dup_finder comp(opts);
     if (!comp.scan()) {
         return -1;
     }

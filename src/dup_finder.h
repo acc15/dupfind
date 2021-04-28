@@ -2,32 +2,34 @@
 
 #include <cstddef>
 #include <filesystem>
-#include "Options.h"
-#include "DistanceMatrix.h"
+#include "options.h"
+#include "distance_matrix.h"
+#include "path_comparer.h"
 
-class DupFind {
+class dup_finder {
 
 private:
-    DistanceMatrix _dm;
     std::vector<std::filesystem::path> _fp;
     std::vector<std::filesystem::path> _dp;
+
+    path_comparer _pc;
 
     size_t _excluded_file_comparisons;
     size_t _excluded_mixed_comparisons;
     size_t _excluded_dir_comparisons;
     size_t _comparison_count;
 
-    const Options& _opts;
+    const options& _opts;
 
     void scan_dir(const std::filesystem::path& path);
+    void compare(const std::filesystem::path& e1, const std::filesystem::path& e2);
 
 public:
 
-    explicit DupFind(const Options& opts);
+    explicit dup_finder(const options& opts);
 
     bool scan();
     void compare_dir();
-    void compare(const std::filesystem::path& e1, const std::filesystem::path& e2);
 
     static size_t compute_comparison_count(size_t n);
 

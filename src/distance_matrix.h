@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <vector>
 
-struct DistanceMatrix {
+struct distance_matrix {
 public:
     static const size_t npos = -1;
 

@@ -3,9 +3,9 @@
 #include <iostream>
 #include <string>
 
-#include <DamerauLevenshtein.h>
+#include <damerau_levenshtein.h>
 
-DistanceMatrix test_dm;
+distance_matrix test_dm;
 
 [[nodiscard]] inline size_t dist_of(const std::string& s1, const std::string& s2) {
     return damerau_levenshtein_distance(s1, s2, test_dm);

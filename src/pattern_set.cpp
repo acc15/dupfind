@@ -1,6 +1,6 @@
-#include "PatternSet.h"
+#include "pattern_set.h"
 
-bool PatternSet::include(const std::string& re) {
+bool pattern_set::include(const std::string& re) {
     try {
         _include.emplace_back(make_pattern_pair(re));
         return true;
@@ -9,7 +9,7 @@ bool PatternSet::include(const std::string& re) {
     }
 }
 
-bool PatternSet::exclude(const std::string& re) {
+bool pattern_set::exclude(const std::string& re) {
     try {
         _exclude.emplace_back(make_pattern_pair(re));
         return true;
@@ -18,7 +18,7 @@ bool PatternSet::exclude(const std::string& re) {
     }
 }
 
-bool PatternSet::match(const std::string& str) const {
+bool pattern_set::match(const std::string& str) const {
     for (const PatternPair& ip: _include) {
         if (std::regex_match(str, ip.first)) {
             return true;
@@ -32,12 +32,12 @@ bool PatternSet::match(const std::string& str) const {
     return _include.empty() || !_exclude.empty();
 }
 
-std::ostream& operator<<(std::ostream& o, const PatternSet& p) {
+std::ostream& operator<<(std::ostream& o, const pattern_set& p) {
     o << "{";
-    for (const PatternSet::PatternPair& ip: p._include) {
+    for (const pattern_set::PatternPair& ip: p._include) {
         o << "+(" << ip.second << ")";
     }
-    for (const PatternSet::PatternPair& ep: p._exclude) {
+    for (const pattern_set::PatternPair& ep: p._exclude) {
         o << "-(" << ep.second << ")";
     }
     o << "}";
@@ -46,11 +46,11 @@ std::ostream& operator<<(std::ostream& o, const PatternSet& p) {
 
 
 
-PatternSet::PatternPair PatternSet::make_pattern_pair(const std::string& str) {
+pattern_set::PatternPair pattern_set::make_pattern_pair(const std::string& str) {
     return std::make_pair(make_regex(str), str);
 }
 
-std::regex PatternSet::make_regex(const std::string& str) {
+std::regex pattern_set::make_regex(const std::string& str) {
     if (str.starts_with("(?i)")) {
         std::string re_str = str.substr(4);
         return std::regex(re_str, std::regex_constants::icase);

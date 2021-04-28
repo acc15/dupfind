@@ -3,9 +3,9 @@
 #include <bitset>
 #include <filesystem>
 
-#include "PatternSet.h"
+#include "pattern_set.h"
 
-enum OptionFlags {
+enum option_flags {
 
     NO_FILE,
     NO_DIR,
@@ -15,16 +15,16 @@ enum OptionFlags {
 
 };
 
-class Options {
+class options {
 public:
     std::filesystem::path dir;
     std::bitset<OPTION_FLAG_LAST> flags;
-    PatternSet file_patterns;
-    PatternSet dir_patterns;
-    PatternSet patterns;
+    pattern_set file_patterns;
+    pattern_set dir_patterns;
+    pattern_set patterns;
     float factor;
 
-    Options();
+    options();
 
     [[nodiscard]] bool cmp_files() const;
     [[nodiscard]] bool cmp_dirs() const;

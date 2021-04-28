@@ -1,4 +1,4 @@
-#include "OptionsParser.h"
+#include "option_parser.h"
 
 bool try_parse_float(const std::string& v, float& parsed) {
     if (v.empty()) {
@@ -16,17 +16,23 @@ bool try_parse_float(const std::string& v, float& parsed) {
     return true;
 }
 
-OptionsParser::Desc* OptionsParser::find_desc(const std::string& opt) {
+option_parser::desc* option_parser::find_desc(const std::string& opt) {
     auto it = _opts.find(opt);
-    if (it == _opts.end()) {
-        return nullptr;
+    if (it != _opts.end()) {
+        return &it->second;
     }
-    return &it->second;
+
+    auto syn_it = _syn.find(opt);
+    if (syn_it != _syn.end()) {
+        return syn_it->second;
+    }
+
+    return nullptr;
 }
 
-bool OptionsParser::parse(int argc, const char* const argv[]) {
+bool option_parser::parse(int argc, const char* const argv[]) {
 
-    const Desc* next_desc = nullptr;
+    const desc* next_desc = nullptr;
     bool no_more_opts = false;
     for (int i = 1; i < argc; i++) {
         std::string arg(argv[i]);
@@ -38,7 +44,7 @@ bool OptionsParser::parse(int argc, const char* const argv[]) {
         }
 
         if (no_more_opts || (arg.size() > 1 && arg[0] != '-')) {
-            const Desc* desc = find_desc("");
+            const desc* desc = find_desc("");
             if (desc != nullptr) {
                 desc->parse(arg);
             }
@@ -52,7 +58,7 @@ bool OptionsParser::parse(int argc, const char* const argv[]) {
 
         std::string opt = arg.substr(1);
 
-        const Desc* desc = find_desc(opt);
+        const desc* desc = find_desc(opt);
         if (desc == nullptr) {
             continue;
         }
@@ -68,14 +74,14 @@ bool OptionsParser::parse(int argc, const char* const argv[]) {
 
 }
 
-void OptionsParser::flag(const std::string& opt, const std::string& description, const std::function<void ()>& parse) {
+void option_parser::flag(const std::string& opt, const std::string& description, const std::function<void ()>& parse) {
     _opts[opt] = { description, [=](const std::string& v) { parse(); return true; }, false };
 }
 
-void OptionsParser::opt(const std::string& opt, const std::string& description, const std::function<bool (const std::string&)>& parse) {
+void option_parser::opt(const std::string& opt, const std::string& description, const std::function<bool (const std::string&)>& parse) {
     _opts[opt] = { description, parse, true };
 }
 
-void OptionsParser::syn(const std::string& name1, const std::string& name2) {
-    _opts[name1] = _opts[name2];
+void option_parser::syn(const std::string& name1, const std::string& name2) {
+    _syn[name1] = &_opts[name2];
 }

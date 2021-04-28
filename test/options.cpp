@@ -1,7 +1,7 @@
 #include <catch2/catch.hpp>
 
-#include <Options.h>
-#include <OptionsParser.h>
+#include <options.h>
+#include <option_parser.h>
 
 TEST_CASE("parse_float", "[options]") {
 
@@ -20,7 +20,7 @@ TEST_CASE("parse_float", "[options]") {
 
 TEST_CASE("options", "[options]") {
 
-    Options opts;
+    options opts;
 
     const char* const cmd[] = { "test.exe", "-f", "0.5", "-nd", "my_dir", "-if", ".*\\.mp4", "-ns" };
     opts.parse(std::size(cmd), cmd);
