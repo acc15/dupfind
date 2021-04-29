@@ -6,5 +6,7 @@ Internally it uses simplified Damerau-Levenshtein
 distance (https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance) 
 algorithm to compare file/dir names
 
-For Usage options see `src/options.cpp#parse`
+Usage:
+
+    dupfind -h
 
