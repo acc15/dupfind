@@ -43,9 +43,7 @@ int options::parse(int argc, const char* const* argv) {
     p.flag("h", "Prints this help", [&usage]() { usage = true; });
 
     p.opt("f", "Minimum factor", [this](const std::string& val) { return try_parse_float(val, factor); });
-
-    p.opt("d", "Directory to scan", [this](const std::string& val) { dir = val; return true; });
-    p.syn("", "d");
+    p.opt({"d", ""}, "Directory to scan", [this](const std::string& val) { dir = val; return true; });
 
     p.opt("i", "Inclusion regex", [this](const std::string& val) { return patterns.include(val); });
     p.opt("e", "Exclusion regex", [this](const std::string& val) { return patterns.exclude(val); });

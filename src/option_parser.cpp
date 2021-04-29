@@ -18,25 +18,34 @@ bool try_parse_float(const std::string& v, float& parsed) {
     return true;
 }
 
-option_parser::desc* option_parser::find_desc(const std::string& opt) {
-    auto it = _opts.find(opt);
-    if (it != _opts.end()) {
-        return &it->second;
-    }
+option_names::option_names(const char* str): option_names(std::string(str)) {
+}
 
-    auto syn_it = _syn.find(opt);
-    if (syn_it != _syn.end()) {
-        return syn_it->second;
-    }
+option_names::option_names(const std::string& name) {
+    add(name);
+}
 
-    return nullptr;
+option_names::option_names(const std::initializer_list<std::string>& init): _vec(init) {
+}
+
+void option_names::add(const std::string& name) {
+    _vec.push_back(name);
+}
+
+const std::vector<std::string>& option_names::vec() const {
+    return _vec;
+}
+
+option_desc* option_parser::find_desc(const std::string& opt) {
+    auto it = _opt_index.find(opt);
+    return it != _opt_index.end() ? &_opts[it->second] : nullptr;
 }
 
 void option_parser::error(const err_fn& err) {
     _err = err;
 }
 
-bool option_parser::parse_opt(const std::string& opt, const desc* desc, const std::string& value) {
+bool option_parser::parse_opt(const std::string& opt, const option_desc* desc, const std::string& value) {
     if (desc == nullptr) {
         if (_err) {
             _err(opt, desc, value);
@@ -78,7 +87,7 @@ bool option_parser::parse(int argc, const char* const argv[]) {
 
         std::string opt = arg.substr(1);
 
-        const desc* desc = find_desc(opt);
+        const option_desc* desc = find_desc(opt);
         if (desc == nullptr) {
             if (_err) {
                 _err(opt, nullptr, "");
@@ -95,16 +104,28 @@ bool option_parser::parse(int argc, const char* const argv[]) {
     return true;
 }
 
-void option_parser::flag(const std::string& opt, const std::string& description, const std::function<void ()>& parse) {
-    _opts[opt] = { description, [=](const std::string& v) { parse(); return true; }, false };
+void option_parser::flag(const option_names& names, const std::string& description, const std::function<void ()>& parse) {
+    desc({names, description, [=](const std::string& v) { parse(); return true; }, false });
 }
 
-void option_parser::opt(const std::string& opt, const std::string& description, const std::function<bool (const std::string&)>& parse) {
-    _opts[opt] = { description, parse, true };
+void option_parser::opt(const option_names& names, const std::string& description, const std::function<bool (const std::string&)>& parse) {
+    desc({names, description, parse, true });
+}
+
+void option_parser::desc(const option_desc& desc) {
+    _opts.push_back(desc);
+    for (const std::string& n: desc.names.vec()) {
+        _opt_index[n] = _opts.size() - 1;
+    }
 }
 
 void option_parser::syn(const std::string& name1, const std::string& name2) {
-    _syn[name1] = &_opts[name2];
+    const auto it = _opt_index.find(name2);
+    if (it == _opt_index.end()) {
+        return;
+    }
+    _opts[it->second].names.add(name1);
+    _opt_index[name1] = it->second;
 }
 
 std::ostream& option_parser::print_opts(std::ostream& s) const {
