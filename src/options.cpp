@@ -36,17 +36,18 @@ int options::parse(int argc, const char* const* argv) {
 
     bool usage = false;
 
+    p.flag("h", "Prints this help", [&usage]() { usage = true; });
+
+    p.opt({"d", ""}, "Directory to scan", [this](const std::string& val) { dir = val; return true; });
+    p.opt("f", "Minimum factor", [this](const std::string& val) { return try_parse_float(val, factor); });
+
     p.flag("nf", "Exclude all files from comparison", [this]() { flags.set(NO_FILE); });
     p.flag("nd", "Exclude all directories from comparison", [this]() { flags.set(NO_DIR); });
     p.flag("nm", "Disable mixed comparisons (file vs dir)", [this]() { flags.set(NO_MIX); });
     p.flag("ns", "Disable file/dir comparisons in same directory", [this]() { flags.set(NO_SAME_DIR); });
-    p.flag("h", "Prints this help", [&usage]() { usage = true; });
 
-    p.opt("f", "Minimum factor", [this](const std::string& val) { return try_parse_float(val, factor); });
-    p.opt({"d", ""}, "Directory to scan", [this](const std::string& val) { dir = val; return true; });
-
-    p.opt("i", "Inclusion regex", [this](const std::string& val) { return patterns.include(val); });
-    p.opt("e", "Exclusion regex", [this](const std::string& val) { return patterns.exclude(val); });
+    p.opt("i", "Common inclusion regex", [this](const std::string& val) { return patterns.include(val); });
+    p.opt("e", "Common exclusion regex", [this](const std::string& val) { return patterns.exclude(val); });
     p.opt("if", "File inclusion regex", [this](const std::string& val) { return file_patterns.include(val); });
     p.opt("ef", "File exclusion regex", [this](const std::string& val) { return file_patterns.exclude(val); });
     p.opt("id", "Dir inclusion regex", [this](const std::string& val) { return dir_patterns.include(val); });

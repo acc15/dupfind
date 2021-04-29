@@ -129,6 +129,20 @@ void option_parser::syn(const std::string& name1, const std::string& name2) {
 }
 
 std::ostream& option_parser::print_opts(std::ostream& s) const {
-    s << "Opts!!!" << std::endl;
+    for (const option_desc& d: _opts) {
+        const std::vector<std::string>& names = d.names.vec();
+        for (size_t i = 0; i < names.size(); i++) {
+            const std::string& name = names[i];
+            if (i > 0) {
+                s << ",";
+            }
+            if (name.empty()) {
+                s << "<unnamed>";
+            } else {
+                s << "-" << name;
+            }
+        }
+        s << " - " << d.description << std::endl;
+    }
     return s;
 }
