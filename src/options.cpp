@@ -23,11 +23,13 @@ bool options::skip_same_dir() const {
 }
 
 bool options::dir_match(const std::filesystem::path& p) const {
-    return cmp_dirs() && patterns.match(p) && dir_patterns.match(p);
+    const std::string p_str = p.string();
+    return cmp_dirs() && patterns.match(p_str) && dir_patterns.match(p_str);
 }
 
 bool options::file_match(const std::filesystem::path& p) const {
-    return cmp_files() && patterns.match(p) && file_patterns.match(p);
+    const std::string p_str = p.string();
+    return cmp_files() && patterns.match(p_str) && file_patterns.match(p_str);
 }
 
 int options::parse(int argc, const char* const* argv) {

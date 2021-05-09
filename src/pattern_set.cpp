@@ -4,7 +4,7 @@ bool pattern_set::include(const std::string& re) {
     try {
         _include.emplace_back(make_pattern_pair(re));
         return true;
-    } catch (const std::regex_error& e) {
+    } catch (const std::regex_error&) {
         return false;
     }
 }
@@ -13,18 +13,18 @@ bool pattern_set::exclude(const std::string& re) {
     try {
         _exclude.emplace_back(make_pattern_pair(re));
         return true;
-    } catch (const std::regex_error& e) {
+    } catch (const std::regex_error&) {
         return false;
     }
 }
 
 bool pattern_set::match(const std::string& str) const {
-    for (const PatternPair& ip: _include) {
+    for (const pair& ip: _include) {
         if (std::regex_match(str, ip.first)) {
             return true;
         }
     }
-    for (const PatternPair& ep: _exclude) {
+    for (const pair& ep: _exclude) {
         if (std::regex_match(str, ep.first)) {
             return false;
         }
@@ -34,19 +34,17 @@ bool pattern_set::match(const std::string& str) const {
 
 std::ostream& operator<<(std::ostream& o, const pattern_set& p) {
     o << "{";
-    for (const pattern_set::PatternPair& ip: p._include) {
+    for (const pattern_set::pair& ip: p._include) {
         o << "+(" << ip.second << ")";
     }
-    for (const pattern_set::PatternPair& ep: p._exclude) {
+    for (const pattern_set::pair& ep: p._exclude) {
         o << "-(" << ep.second << ")";
     }
     o << "}";
     return o;
 }
 
-
-
-pattern_set::PatternPair pattern_set::make_pattern_pair(const std::string& str) {
+pattern_set::pair pattern_set::make_pattern_pair(const std::string& str) {
     return std::make_pair(make_regex(str), str);
 }
 

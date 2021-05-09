@@ -32,8 +32,8 @@ size_t damerau_levenshtein_distance(const Seq& s1, const Seq& s2, distance_matri
     }
 
     m.init(l1, l2);
-    for (int i = 0; i < l1; i++) {
-        for (int j = 0; j < l2; j++) {
+    for (size_t i = 0; i < l1; i++) {
+        for (size_t j = 0; j < l2; j++) {
 
             const size_t replace_cost = m(i - 1, j - 1) + (s1[i] == s2[j] ? 0 : cost.replace);
             const size_t remove_cost = m(i - 1, j) + cost.remove;

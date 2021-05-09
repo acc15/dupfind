@@ -1,15 +1,16 @@
 #pragma once
 
 #include <regex>
+#include <ostream>
 
 class pattern_set {
 private:
-    typedef std::pair<std::regex, std::string> PatternPair;
+    typedef std::pair<std::regex, std::string> pair;
 
-    std::vector<PatternPair> _include;
-    std::vector<PatternPair> _exclude;
+    std::vector<pair> _include;
+    std::vector<pair> _exclude;
 
-    static PatternPair make_pattern_pair(const std::string& str);
+    static pair make_pattern_pair(const std::string& str);
     static std::regex make_regex(const std::string& str);
 
 public:

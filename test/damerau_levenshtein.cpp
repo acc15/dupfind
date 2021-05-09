@@ -7,7 +7,7 @@
 
 distance_matrix test_dm;
 
-[[nodiscard]] inline size_t dist_of(const std::string& s1, const std::string& s2) {
+[[nodiscard]] inline size_t dist(const std::string& s1, const std::string& s2) {
     return damerau_levenshtein_distance(s1, s2, test_dm);
 }
 
@@ -20,16 +20,16 @@ distance_matrix test_dm;
 TEST_CASE( "damerau_levenshtein_distance", "[damerau_levenshtein]" ) {
 
     // three replace
-    REQUIRE( dist_of("abc", "xyz") == 3 );
+    REQUIRE(dist("abc", "xyz") == 3 );
 
     // single remove
-    REQUIRE( dist_of("abba", "aba") == 1 );
+    REQUIRE(dist("abba", "aba") == 1 );
 
     // single transpose
-    REQUIRE( dist_of("abcd", "abdc") == 1 );
+    REQUIRE(dist("abcd", "abdc") == 1 );
 
     // two transpose
-    REQUIRE( dist_of("abcd", "badc") == 2 );
+    REQUIRE(dist("abcd", "badc") == 2 );
 
 }
 

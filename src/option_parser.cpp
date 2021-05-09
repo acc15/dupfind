@@ -93,13 +93,12 @@ bool option_parser::parse(int argc, const char* const argv[]) {
                 _err(opt, nullptr, "");
             }
             success = false;
-            continue;
-        }
-        if (!desc->require_arg) {
+        } else if (desc->require_arg) {
+            next_opt = opt;
+        } else {
             success &= parse_opt(opt, desc, "");
         }
 
-        next_opt = opt;
     }
     return true;
 }

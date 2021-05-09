@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.1)
 project(dupfind)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -17,6 +17,7 @@ set(MAIN_SRC
     src/pattern_set.h
     src/path_comparer.cpp
     src/path_comparer.h
+    src/myers.h
 )
 
 add_executable(dupfind ${MAIN_SRC} src/main.cpp)
@@ -29,6 +30,7 @@ add_executable(dupfind_tests
     test/options.cpp
     test/main.cpp
     test/dup_finder.cpp
-)
+    test/myers.cpp)
+
 target_include_directories(dupfind_tests PRIVATE src)
 target_link_libraries(dupfind_tests PRIVATE Catch2::Catch2)
