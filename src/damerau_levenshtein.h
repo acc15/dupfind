@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "distance_matrix.h"
 
 struct damerau_levenshtein_cost {
@@ -39,7 +41,7 @@ size_t damerau_levenshtein_distance(const Seq& s1, const Seq& s2, distance_matri
             const size_t remove_cost = m(i - 1, j) + cost.remove;
             const size_t insert_cost = m(i, j - 1) + cost.insert;
 
-            m.at(i, j) = std::min(std::min(replace_cost, remove_cost), insert_cost);
+            m.at(i, j) = std::min({ replace_cost, remove_cost, insert_cost });
             if (i > 0 && j > 0 && s1[i] == s2[j - 1] && s1[i - 1] == s2[j]) {
                 m.at(i, j) = std::min( m(i, j), m(i - 2, j - 2) + cost.transpose );
             }
