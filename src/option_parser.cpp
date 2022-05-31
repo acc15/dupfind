@@ -97,6 +97,7 @@ bool option_parser::parse(int argc, const char* const argv[]) {
             next_opt = opt;
         } else {
             success &= parse_opt(opt, desc, "");
+            continue;
         }
 
     }
