@@ -9,4 +9,5 @@ algorithm to compare file/dir names
 Usage:
 
     dupfind -h
+    dupfind -ns -ef (?i).*\.jpe?g -f 0.98
 
