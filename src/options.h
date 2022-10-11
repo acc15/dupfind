@@ -4,7 +4,6 @@
 #include <filesystem>
 
 #include "pattern_set.h"
-#include "option_parser.h"
 
 enum option_flags {
 

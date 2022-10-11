@@ -4,59 +4,83 @@
 
 #include "distance_matrix.h"
 
-struct damerau_levenshtein_cost {
+namespace damerau_levenshtein {
+
+struct cost {
     size_t replace;
     size_t insert;
     size_t remove;
     size_t transpose;
 };
 
-const damerau_levenshtein_cost DEFAULT_COSTS = {1, 1, 1, 1 };
+const cost DEFAULT_COST = {1, 1, 1, 1};
 
+template <typename T>
+struct params {
+    const T& l;
+    const T& r;
+    const struct cost& cost;
+};
 
 template <typename Seq>
-size_t max_damerau_levenshtein_distance(const Seq& s1, const Seq& s2, const damerau_levenshtein_cost& cost = DEFAULT_COSTS) {
-    return s1.size() * cost.remove + s2.size() * cost.insert;
+struct compute_params : params<Seq> {
+    distance_matrix& m;
+};
+
+template <typename Seq>
+size_t max_distance(const params<Seq>& p) {
+    return p.l.size() * p.cost.remove + p.r.size() * p.cost.insert;
 }
 
 template <typename Seq>
-size_t damerau_levenshtein_distance(const Seq& s1, const Seq& s2, distance_matrix& m, const damerau_levenshtein_cost& cost = DEFAULT_COSTS) {
+size_t compute_levenshtein_cost(const compute_params<Seq>& p, size_t i, size_t j) {
+    return std::min({
+        p.m(i - 1, j - 1) + (p.l[i] == p.r[j] ? 0 : p.cost.replace),
+        p.m(i - 1, j) + p.cost.remove,
+        p.m(i, j - 1) + p.cost.insert
+    });
+}
+
+template <typename Seq>
+size_t compute_damerau_levenshtein_cost(const compute_params<Seq>& p, size_t i, size_t j) {
+    const size_t l_cost = compute_levenshtein_cost(p, i, j);
+    if (i > 0 && j > 0 && p.l[i] == p.r[j - 1] && p.l[i - 1] == p.r[j]) {
+        return std::min(l_cost, p.m(i - 2, j - 2) + p.cost.transpose);
+    }
+    return l_cost;
+}
+
+
+template <typename Seq>
+size_t distance(const compute_params<Seq>& p) {
 
     typedef typename Seq::value_type value_type;
 
-    size_t l1 = s1.size();
-    size_t l2 = s2.size();
+    size_t ls = p.l.size();
+    size_t rs = p.r.size();
 
-    if (l1 == 0) {
-        return l2 * cost.insert;
-    } else if (l2 == 0) {
-        return l1 * cost.remove;
+    if (ls == 0) {
+        return rs * p.cost.insert;
+    } else if (rs == 0) {
+        return ls * p.cost.remove;
     }
 
-    m.init(l1, l2);
-    for (size_t i = 0; i < l1; i++) {
-        for (size_t j = 0; j < l2; j++) {
-
-            const size_t replace_cost = m(i - 1, j - 1) + (s1[i] == s2[j] ? 0 : cost.replace);
-            const size_t remove_cost = m(i - 1, j) + cost.remove;
-            const size_t insert_cost = m(i, j - 1) + cost.insert;
-
-            m.at(i, j) = std::min({ replace_cost, remove_cost, insert_cost });
-            if (i > 0 && j > 0 && s1[i] == s2[j - 1] && s1[i - 1] == s2[j]) {
-                m.at(i, j) = std::min( m(i, j), m(i - 2, j - 2) + cost.transpose );
-            }
-
+    p.m.init(ls, rs);
+    for (size_t i = 0; i < ls; i++) {
+        for (size_t j = 0; j < rs; j++) {
+            p.m.at(i, j) = compute_damerau_levenshtein_cost(p, i, j);
         }
     }
 
-    return m.distance();
+    return p.m.distance();
 }
 
 template <typename T, typename Seq>
-T damerau_levenshtein_factor(const Seq& s1, const Seq& s2, distance_matrix& m, const damerau_levenshtein_cost& cost = DEFAULT_COSTS) {
-    size_t max_distance = max_damerau_levenshtein_distance(s1, s2, cost);
-    size_t distance = damerau_levenshtein_distance(s1, s2, m, cost);
-    return static_cast<T>(1.) - (static_cast<T>(distance) / max_distance);
+T factor(const compute_params<Seq>& p) {
+    auto md = max_distance(p);
+    auto d = distance(p);
+    return static_cast<T>(1.F) - (static_cast<T>(d) / md);
 }
 
 
+}

@@ -3,7 +3,6 @@
 #include <cstddef>
 #include <filesystem>
 #include "options.h"
-#include "distance_matrix.h"
 #include "path_comparer.h"
 
 class dup_finder {

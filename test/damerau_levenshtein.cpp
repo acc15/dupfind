@@ -5,16 +5,18 @@
 
 #include <damerau_levenshtein.h>
 
+using namespace damerau_levenshtein;
+
 distance_matrix test_dm;
 
 [[nodiscard]] inline size_t dist(const std::string& s1, const std::string& s2) {
-    return damerau_levenshtein_distance(s1, s2, test_dm);
+    return distance(compute_params<std::string> { s1, s2, DEFAULT_COST, test_dm });
 }
 
 [[nodiscard]] inline float factor_of(const std::string& s1, const std::string& s2) {
-    auto factor = damerau_levenshtein_factor<float>(s1, s2, test_dm);
-    std::cout << "damerau levenshtein factor between \"" << s1 << "\" and \"" << s2 << "\": " << factor << std::endl;
-    return factor;
+    auto f = factor<float, std::string>(compute_params<std::string> { s1, s2, DEFAULT_COST, test_dm });
+    std::cout << "damerau levenshtein factor between \"" << s1 << "\" and \"" << s2 << "\": " << f << std::endl;
+    return f;
 }
 
 TEST_CASE( "damerau_levenshtein_distance", "[damerau_levenshtein]" ) {
@@ -36,19 +38,19 @@ TEST_CASE( "damerau_levenshtein_distance", "[damerau_levenshtein]" ) {
 TEST_CASE( "damerau_levenshtein_factor", "[damerau_levenshtein]" ) {
 
     // three replace
-    REQUIRE( factor_of("abc", "abc") == 1.0f );
+    REQUIRE( factor_of("abc", "abc") == 1.F );
 
     // single remove
-    REQUIRE( factor_of("abba", "aba") == (1.0f - (1.f / 7)) );
+    REQUIRE( factor_of("abba", "aba") == (1.F - (1.F / 7)) );
 
     // single transpose
-    REQUIRE( factor_of("abcd", "abdc") == (1.0f - (1.f / 8)) );
+    REQUIRE( factor_of("abcd", "abdc") == (1.F - (1.F / 8)) );
 
     // two transpose
-    REQUIRE( factor_of("abcd", "badc") == (1.0f - (2.f / 8)) );
+    REQUIRE( factor_of("abcd", "badc") == (1.F - (2.F / 8)) );
 
 }
 
 TEST_CASE( "max_damerau_levenshtein_distance", "[damerau_levenshtein]" ) {
-    REQUIRE( max_damerau_levenshtein_distance(std::string("xyz"), std::string("abcd")) == 7 );
+    REQUIRE( max_distance(params { std::string("xyz"), std::string("abcd"), DEFAULT_COST }) == 7 );
 }
